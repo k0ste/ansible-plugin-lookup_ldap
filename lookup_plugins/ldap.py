@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 # Copyright (C) 2014, Thomas Quinot
 #
 # This file is part of Ansible
@@ -74,6 +77,8 @@ def encode(p, v):
         v = base64.b64encode(v)
     elif e is not None:
         v = v.decode(e)
+    else:
+        v = v.decode()
     return v
 
 
@@ -142,7 +147,7 @@ class LookupModule(LookupBase):
 
         try:
             ctx = self.render_template(variables, ctx)
-        except Exception, e:
+        except Exception as  e:
             raise errors.AnsibleError(
                 'exception while preparing LDAP parameters: %s' % e)
         self._display.vv("LDAP config: %s" % hide_pw(ctx))
@@ -166,7 +171,7 @@ class LookupModule(LookupBase):
                         attr_props[attr_name] = attr_prop_dict
 
             base_args['attrlist'] = \
-                [a.encode('ASCII') for a in attr_props
+                [a for a in attr_props
                  if attr_props[a] is None
                  or not attr_props[a].get('skip', False)]
 
@@ -196,7 +201,7 @@ class LookupModule(LookupBase):
                 # bindpw may be an AnsibleVaultEncryptedUnicode, which ldap doesn't
                 # know anything about, so cast to unicode explicitly now.
 
-                lo.simple_bind_s(ctx.get('binddn', ''), unicode(ctx.get('bindpw', '')))
+                lo.simple_bind_s(ctx.get('binddn', ''), str(ctx.get('bindpw', '')))
 
         ret = []
 
