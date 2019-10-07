@@ -277,6 +277,12 @@ class LookupModule(LookupBase):
 
     @staticmethod
     def get_ldap_constant_value(value_specifier, constant_name_prefix):
+    # Basestring is not available in Python 3, use str instead.
+        try:
+            basestring
+        except NameError:
+            basestring = str
+
         if isinstance(value_specifier, basestring):
             return getattr(ldap, constant_name_prefix + value_specifier.upper())
         else:
